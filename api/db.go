@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"sync"
 	"time"
 
@@ -24,7 +23,7 @@ func init() {
 
 func initDB() {
 	once.Do(func() {
-		mongoURI := os.Getenv("MONGODB_URI")
+		mongoURI := "mongodb+srv://pantha704:prathamj!@cluster0.vik0gea.mongodb.net/"
 		if mongoURI == "" {
 			log.Println("MONGODB_URI environment variable is not set")
 			return
