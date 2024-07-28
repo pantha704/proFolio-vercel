@@ -8,7 +8,6 @@
   ],
   "routes": [
     { "src": "/user", "dest": "/api/user-handlers.go" },
-    { "src": "/cover-letter", "dest": "/api/cover_letter.go" },
     { "src": "/(.*)", "dest": "/api/index.go" }
   ]
 }
