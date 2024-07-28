@@ -7,7 +7,7 @@
     }
   ],
   "routes": [
-    { "src": "/user", "dest": "/api/user-handlers.go" },
+    { "src": "/user", "dest": "/api/index.go" },
     { "src": "/(.*)", "dest": "/api/index.go" }
   ]
 }
