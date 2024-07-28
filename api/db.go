@@ -56,6 +56,6 @@ func GetClient() *mongo.Client {
 }
 
 // Handler is a dummy handler to satisfy Vercel's requirements
-func Handler(w http.ResponseWriter, r *http.Request) {
+func dbHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "This is a dummy handler for db.go")
 }
