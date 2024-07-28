@@ -18,6 +18,11 @@ type User struct {
 
 func GetAllUsersHandler(w http.ResponseWriter, r *http.Request) {
     client := GetClient()
+	if client == nil {
+		http.Error(w, "Database connection not established", http.StatusInternalServerError)
+		return
+	}
+	
     collection := client.Database("profileFolio").Collection("users")
 
     ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
