@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func Handler(w http.ResponseWriter, r *http.Request) {
+func Ihandler(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, "/")
 	
 	switch path {
