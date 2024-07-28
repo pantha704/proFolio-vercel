@@ -3,11 +3,17 @@ package api
 import (
 	"net/http"
 	"strings"
+
+	"github.com/gorilla/mux"
 )
 
-func IHandler(w http.ResponseWriter, r *http.Request) {
+func Handler(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, "/")
 	
+	router := mux.NewRouter()
+    RegisterUserRoutes(router)
+    router.ServeHTTP(w, r)
+
 	switch path {
 	case "user":
 		GetAllUsersHandler(w, r)

@@ -4,6 +4,7 @@ package api
 import (
 	"backend/handlers"   // Importing the handlers package
 	"backend/middleware" // Importing the middleware package
+	"net/http"
 
 	"github.com/gorilla/mux" // Importing the mux package from Gorilla for HTTP routing
 )
@@ -63,3 +64,116 @@ func RegisterUserRoutes(router *mux.Router) {
 	authenticated.HandleFunc("/cover-letter", handlers.OpenAICoverLetterHandler).Methods("POST")
 }
 
+// Exported route handlers for Vercel
+
+// SignUp handles user registration
+func SignUp(w http.ResponseWriter, r *http.Request) {
+	handlers.SignUpHandler(w, r)
+}
+
+// SignIn handles user authentication
+func SignIn(w http.ResponseWriter, r *http.Request) {
+	handlers.SignInHandler(w, r)
+}
+
+// GetSkills retrieves all available skills
+func GetSkills(w http.ResponseWriter, r *http.Request) {
+	handlers.GetSkillsHandler(w, r)
+}
+
+// AddUser handles adding a new user
+func AddUser(w http.ResponseWriter, r *http.Request) {
+	middleware.JwtVerify(http.HandlerFunc(handlers.AddUserHandler)).ServeHTTP(w, r)
+}
+
+// GetUser retrieves user information
+func GetUser(w http.ResponseWriter, r *http.Request) {
+	middleware.JwtVerify(http.HandlerFunc(handlers.GetUserHandler)).ServeHTTP(w, r)
+}
+
+// GetUserByID retrieves a user by their ID
+func GetUserByID(w http.ResponseWriter, r *http.Request) {
+	middleware.JwtVerify(http.HandlerFunc(handlers.GetUserByIDHandler)).ServeHTTP(w, r)
+}
+
+// GetUserByEmail retrieves a user by their email
+func GetUserByEmail(w http.ResponseWriter, r *http.Request) {
+	middleware.JwtVerify(http.HandlerFunc(handlers.GetUserByEmailHandler)).ServeHTTP(w, r)
+}
+
+// GetUserByUsername retrieves a user by their username
+func GetUserByUsername(w http.ResponseWriter, r *http.Request) {
+	middleware.JwtVerify(http.HandlerFunc(handlers.GetUserByUsernameHandler)).ServeHTTP(w, r)
+}
+
+// UpdateUser updates user information
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	middleware.JwtVerify(http.HandlerFunc(handlers.UpdateUserHandler)).ServeHTTP(w, r)
+}
+
+// UpdateUserByEmail updates a user by their email
+func UpdateUserByEmail(w http.ResponseWriter, r *http.Request) {
+	middleware.JwtVerify(http.HandlerFunc(handlers.UpdateUserByEmailHandler)).ServeHTTP(w, r)
+}
+
+// UpdateUserByUsername updates a user by their username
+func UpdateUserByUsername(w http.ResponseWriter, r *http.Request) {
+	middleware.JwtVerify(http.HandlerFunc(handlers.UpdateUserByUsernameHandler)).ServeHTTP(w, r)
+}
+
+// GetSkillsByUserID retrieves skills for a user by their ID
+func GetSkillsByUserID(w http.ResponseWriter, r *http.Request) {
+	middleware.JwtVerify(http.HandlerFunc(handlers.GetSkillsByUserIDHandler)).ServeHTTP(w, r)
+}
+
+// GetSkillsByUsername retrieves skills for a user by their username
+func GetSkillsByUsername(w http.ResponseWriter, r *http.Request) {
+	middleware.JwtVerify(http.HandlerFunc(handlers.GetSkillsByUsernameHandler)).ServeHTTP(w, r)
+}
+
+// GetSkillsByEmail retrieves skills for a user by their email
+func GetSkillsByEmail(w http.ResponseWriter, r *http.Request) {
+	middleware.JwtVerify(http.HandlerFunc(handlers.GetSkillsByEmailHandler)).ServeHTTP(w, r)
+}
+
+// ... Continue with other route handlers ...
+
+// GeminiCoverLetter generates a cover letter using Gemini
+func GeminiCoverLetter(w http.ResponseWriter, r *http.Request) {
+	middleware.JwtVerify(http.HandlerFunc(handlers.GeminiCoverLetterHandler)).ServeHTTP(w, r)
+}
+
+// CalculateReplacementChance calculates the chance of replacement
+func CalculateReplacementChance(w http.ResponseWriter, r *http.Request) {
+	middleware.JwtVerify(http.HandlerFunc(handlers.CalculateReplacementChance)).ServeHTTP(w, r)
+}
+
+// ResumeReview handles resume review requests
+func ResumeReview(w http.ResponseWriter, r *http.Request) {
+	middleware.JwtVerify(http.HandlerFunc(handlers.ResumeReview)).ServeHTTP(w, r)
+}
+
+// SetDefaultResume sets a resume as default
+func SetDefaultResume(w http.ResponseWriter, r *http.Request) {
+	middleware.JwtVerify(http.HandlerFunc(handlers.SetDefaultResumeHandler)).ServeHTTP(w, r)
+}
+
+// AddResume adds a new resume
+func AddResume(w http.ResponseWriter, r *http.Request) {
+	middleware.JwtVerify(http.HandlerFunc(handlers.AddResumeHandler)).ServeHTTP(w, r)
+}
+
+// UpdateResume updates an existing resume
+func UpdateResume(w http.ResponseWriter, r *http.Request) {
+	middleware.JwtVerify(http.HandlerFunc(handlers.UpdateResumeHandler)).ServeHTTP(w, r)
+}
+
+// DeleteResume deletes a resume
+func DeleteResume(w http.ResponseWriter, r *http.Request) {
+	middleware.JwtVerify(http.HandlerFunc(handlers.DeleteResumeHandler)).ServeHTTP(w, r)
+}
+
+// OpenAICoverLetter generates a cover letter using OpenAI
+func OpenAICoverLetter(w http.ResponseWriter, r *http.Request) {
+	middleware.JwtVerify(http.HandlerFunc(handlers.OpenAICoverLetterHandler)).ServeHTTP(w, r)
+}
