@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -18,19 +19,30 @@ type User struct {
 	Username string `json:"username" bson:"username"`
 }
 
+func Handler(w http.ResponseWriter, r *http.Request) {
+	path := strings.TrimPrefix(r.URL.Path, "/")
+
+	switch {
+	case strings.HasPrefix(path, "users"):
+		UserHandler(w, r)
+	default:
+		fmt.Fprintf(w, "Welcome to the main handler!")
+	}
+}
+
 func UserHandler(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, "/users")
 	// fmt.Println(path)
 	switch {
 
-	case path == "" :
+	case path == "":
 		GetAllUsersHandler(w, r)
 		return
 
 	case strings.HasPrefix(path, "/"):
 		// Extract the ID from the path
 		id := strings.TrimPrefix(path, "/")
-		
+
 		if id != "" {
 			// Call GetUserByIDHandler with the extracted ID
 			GetUserByIDHandler(w, r)
@@ -41,7 +53,6 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 	}
 }
-
 
 func GetAllUsersHandler(w http.ResponseWriter, r *http.Request) {
 	client := GetClient()
@@ -74,7 +85,7 @@ func GetAllUsersHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetUserByIDHandler(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/users/")
-	
+
 	// fmt.Printf("Requested user ID: %s\n", id) // Add this line for debugging
 
 	collection := GetClient().Database("profileFolio").Collection("users")
