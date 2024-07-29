@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -25,11 +26,11 @@ func init() {
 func initDB() {
 	once.Do(func() {
 		// Load local .env file
-		// err := godotenv.Load()
-		// if err != nil {
-		// 	log.Printf("Error loading .env file: %v", err)
-		// 	// Don't fatally exit, just log the error
-		// }
+		err := godotenv.Load()
+		if err != nil {
+			log.Printf("Error loading .env file: %v", err)
+			// Don't fatally exit, just log the error
+		}
 
 		mongoURI := os.Getenv("MONGODB_URI")
 		if mongoURI == "" {
@@ -42,7 +43,7 @@ func initDB() {
 		defer cancel()
 
 		// var err error                                   // Declare err here to avoid shadowing
-		client, err := mongo.Connect(ctx, clientOptions) // Use '=' instead of ':='
+		client, err = mongo.Connect(ctx, clientOptions) // Use '=' instead of ':='
 		if err != nil {
 			log.Printf("Error connecting to MongoDB: %v", err)
 			return
@@ -55,7 +56,6 @@ func initDB() {
 		}
 
 		log.Println("Connected to MongoDB successfully")
-		log.Println(mongoURI)
 	})
 }
 
