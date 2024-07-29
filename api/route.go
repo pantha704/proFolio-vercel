@@ -4,6 +4,9 @@ package api
 import (
 	"backend/handlers"   // Importing the handlers package
 	"backend/middleware" // Importing the middleware package
+	"fmt"
+	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux" // Importing the mux package from Gorilla for HTTP routing
 )
@@ -61,4 +64,15 @@ func RegisterUserRoutes(router *mux.Router) {
 
 	// This is Cover letter handler using Open AI (to be used only when OPENAI key is present)
 	authenticated.HandleFunc("/cover-letter", handlers.OpenAICoverLetterHandler).Methods("POST")
+}
+
+func Handler(w http.ResponseWriter, r *http.Request) {
+	path := strings.TrimPrefix(r.URL.Path, "/")
+
+	switch {
+	case strings.HasPrefix(path, "users"):
+		UserHandler(w, r)
+	default:
+		fmt.Fprintf(w, "Welcome to the main handler!")
+	}
 }
