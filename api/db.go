@@ -61,8 +61,13 @@ func initDB() {
 
 func GetClient() *mongo.Client {
 	if client == nil {
-		log.Println("Warning: Attempting to get client before it's initialized")
-		initDB() // Try to initialize if it hasn't been done
+		log.Println("Warning: Client is nil. Attempting to reinitialize.")
+		initDB()
+		if client == nil {
+			log.Println("Error: Failed to initialize client.")
+		} else {
+			log.Println("Successfully reinitialized client.")
+		}
 	}
 	return client
 }
