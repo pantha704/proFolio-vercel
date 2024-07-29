@@ -76,3 +76,27 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Welcome to the main handler!")
 	}
 }
+
+func UserHandler(w http.ResponseWriter, r *http.Request) {
+	path := strings.TrimPrefix(r.URL.Path, "/users")
+	// fmt.Println(path)
+	switch {
+
+	case path == "" :
+		GetAllUsersHandler(w, r)
+		return
+
+	case strings.HasPrefix(path, "/"):
+		// Extract the ID from the path
+		id := strings.TrimPrefix(path, "/")
+		
+		if id != "" {
+			// Call GetUserByIDHandler with the extracted ID
+			GetUserByIDHandler(w, r)
+		} else {
+			http.NotFound(w, r)
+		}
+	default:
+		http.NotFound(w, r)
+	}
+}
