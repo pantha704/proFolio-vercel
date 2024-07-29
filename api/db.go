@@ -27,7 +27,8 @@ func initDB() {
 		// Load local .env file
 		// err := godotenv.Load()
 		// if err != nil {
-		// 	log.Fatalf("Error loading .env file")
+		// 	log.Printf("Error loading .env file: %v", err)
+		// 	// Don't fatally exit, just log the error
 		// }
 
 		mongoURI := os.Getenv("MONGODB_URI")
@@ -40,7 +41,8 @@ func initDB() {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
-		client, err := mongo.Connect(ctx, clientOptions)
+		// var err error                                   // Declare err here to avoid shadowing
+		client, err := mongo.Connect(ctx, clientOptions) // Use '=' instead of ':='
 		if err != nil {
 			log.Printf("Error connecting to MongoDB: %v", err)
 			return
@@ -53,40 +55,14 @@ func initDB() {
 		}
 
 		log.Println("Connected to MongoDB successfully")
+		log.Println(mongoURI)
 	})
 }
 
 func GetClient() *mongo.Client {
 	if client == nil {
-		// Attempt to reconnect
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
-
-		// Load local .env file
-		// err := godotenv.Load()
-		// if err != nil {
-		// 	log.Fatalf("Error loading .env file")
-		// }
-
-		mongoURI := os.Getenv("MONGODB_URI")
-		if mongoURI == "" {
-			log.Println("MONGODB_URI environment variable is not set")
-		}
-
-		clientOptions := options.Client().ApplyURI(mongoURI)
-		client, err := mongo.Connect(ctx, clientOptions)
-		if err != nil {
-			log.Println("Failed to reconnect to MongoDB:", err)
-			return nil
-		}
-
-		err = client.Ping(ctx, nil)
-		if err != nil {
-			log.Println("Failed to ping MongoDB after reconnection:", err)
-			return nil
-		}
-
-		fmt.Println("Reconnected to MongoDB!")
+		log.Println("Warning: Attempting to get client before it's initialized")
+		initDB() // Try to initialize if it hasn't been done
 	}
 	return client
 }
