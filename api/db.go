@@ -57,6 +57,7 @@ func initDB() {
 }
 
 func GetClient() *mongo.Client {
+	initDB()
 	return client
 }
 

@@ -65,5 +65,5 @@ func RegisterUserRoutes(router *mux.Router) {
 }
 
 func RouteHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "This is a dummy handler for db.go")
+	fmt.Fprint(w, "This is a dummy handler for route.go")
 }
