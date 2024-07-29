@@ -6,7 +6,6 @@ import (
 	"backend/middleware" // Importing the middleware package
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/gorilla/mux" // Importing the mux package from Gorilla for HTTP routing
 )
@@ -23,8 +22,8 @@ import (
 func RegisterUserRoutes(router *mux.Router) {
 	router.HandleFunc("/api/signup", handlers.SignUpHandler).Methods("POST") // Route for user signup
 	router.HandleFunc("/api/signin", handlers.SignInHandler).Methods("POST") // Route for user signin
-	router.HandleFunc("/api/skills", handlers.GetSkillsHandler).Methods("GET") 
-	
+	router.HandleFunc("/api/skills", handlers.GetSkillsHandler).Methods("GET")
+
 	// Routes that require authentication
 	authenticated := router.PathPrefix("/api").Subrouter()
 	authenticated.Use(middleware.JwtVerify)
@@ -53,10 +52,9 @@ func RegisterUserRoutes(router *mux.Router) {
 	authenticated.HandleFunc("/cover-letter", handlers.GeminiCoverLetterHandler).Methods("POST")  // Route for generating a cover letter using Gemini
 	authenticated.HandleFunc("/calc-chance", handlers.CalculateReplacementChance).Methods("POST") // Route for calculating replacement chance
 	authenticated.HandleFunc("/resume-review", handlers.ResumeReview).Methods("POST")             // Route for reviewing a resume
-	
-	
+
 	// Resume CRUD
-	
+
 	authenticated.HandleFunc("/makeDefault", handlers.SetDefaultResumeHandler).Methods("POST")
 	authenticated.HandleFunc("/user/{userID}/resumes", handlers.AddResumeHandler).Methods("POST")
 	authenticated.HandleFunc("/user/{userID}/resumes/{resumeID}", handlers.UpdateResumeHandler).Methods("PUT")
@@ -66,37 +64,6 @@ func RegisterUserRoutes(router *mux.Router) {
 	authenticated.HandleFunc("/cover-letter", handlers.OpenAICoverLetterHandler).Methods("POST")
 }
 
-func Handler(w http.ResponseWriter, r *http.Request) {
-	path := strings.TrimPrefix(r.URL.Path, "/")
-
-	switch {
-	case strings.HasPrefix(path, "users"):
-		UserHandler(w, r)
-	default:
-		fmt.Fprintf(w, "Welcome to the main handler!")
-	}
-}
-
-func UserHandler(w http.ResponseWriter, r *http.Request) {
-	path := strings.TrimPrefix(r.URL.Path, "/users")
-	// fmt.Println(path)
-	switch {
-
-	case path == "" :
-		GetAllUsersHandler(w, r)
-		return
-
-	case strings.HasPrefix(path, "/"):
-		// Extract the ID from the path
-		id := strings.TrimPrefix(path, "/")
-		
-		if id != "" {
-			// Call GetUserByIDHandler with the extracted ID
-			GetUserByIDHandler(w, r)
-		} else {
-			http.NotFound(w, r)
-		}
-	default:
-		http.NotFound(w, r)
-	}
+func RouteHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "This is a dummy handler for db.go")
 }
