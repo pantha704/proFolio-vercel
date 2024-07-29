@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -19,6 +20,30 @@ var client *mongo.Client
 
 func SetClient(mongoClient *mongo.Client) {
 	client = mongoClient
+}
+
+func UserHandler(w http.ResponseWriter, r *http.Request) {
+	path := strings.TrimPrefix(r.URL.Path, "/users")
+	// fmt.Println(path)
+	switch {
+
+	case path == "":
+		GetAllUsersHandler(w, r)
+		return
+
+	case strings.HasPrefix(path, "/"):
+		// Extract the ID from the path
+		id := strings.TrimPrefix(path, "/")
+
+		if id != "" {
+			// Call GetUserByIDHandler with the extracted ID
+			GetUserByIDHandler(w, r)
+		} else {
+			http.NotFound(w, r)
+		}
+	default:
+		http.NotFound(w, r)
+	}
 }
 
 func GetUserByIDHandler(w http.ResponseWriter, r *http.Request) {
@@ -45,7 +70,6 @@ func GetUserByIDHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(user)
@@ -270,10 +294,10 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	response := map[string]interface{}{
-		"message": "User created successfully",
-		"id": new_user.ID,
+		"message":     "User created successfully",
+		"id":          new_user.ID,
 		"accessToken": token,
-		"user":    new_user,
+		"user":        new_user,
 	}
 	json.NewEncoder(w).Encode(response)
 }
@@ -329,8 +353,8 @@ func SignInHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := map[string]interface{}{
-		"id" : user.ID,
-		"user":user.Basics,
+		"id":          user.ID,
+		"user":        user.Basics,
 		"accessToken": token,
 	}
 

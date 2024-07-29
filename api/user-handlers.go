@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type User struct {
@@ -27,30 +26,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		UserHandler(w, r)
 	default:
 		fmt.Fprintf(w, "Welcome to the main handler!")
-	}
-}
-
-func UserHandler(w http.ResponseWriter, r *http.Request) {
-	path := strings.TrimPrefix(r.URL.Path, "/users")
-	// fmt.Println(path)
-	switch {
-
-	case path == "":
-		GetAllUsersHandler(w, r)
-		return
-
-	case strings.HasPrefix(path, "/"):
-		// Extract the ID from the path
-		id := strings.TrimPrefix(path, "/")
-
-		if id != "" {
-			// Call GetUserByIDHandler with the extracted ID
-			GetUserByIDHandler(w, r)
-		} else {
-			http.NotFound(w, r)
-		}
-	default:
-		http.NotFound(w, r)
 	}
 }
 
@@ -83,27 +58,27 @@ func GetAllUsersHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(users)
 }
 
-func GetUserByIDHandler(w http.ResponseWriter, r *http.Request) {
-	id := strings.TrimPrefix(r.URL.Path, "/users/")
+// func GetUserByIDHandler(w http.ResponseWriter, r *http.Request) {
+// 	id := strings.TrimPrefix(r.URL.Path, "/users/")
 
-	// fmt.Printf("Requested user ID: %s\n", id) // Add this line for debugging
+// 	// fmt.Printf("Requested user ID: %s\n", id) // Add this line for debugging
 
-	collection := GetClient().Database("profileFolio").Collection("users")
-	var user User
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
+// 	collection := GetClient().Database("profileFolio").Collection("users")
+// 	var user User
+// 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+// 	defer cancel()
 
-	// If IDs are strings, use a string query instead of ObjectID
-	err := collection.FindOne(ctx, bson.M{"_id": id}).Decode(&user)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			http.Error(w, "User not found", http.StatusNotFound)
-		} else {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		return
-	}
+// 	// If IDs are strings, use a string query instead of ObjectID
+// 	err := collection.FindOne(ctx, bson.M{"_id": id}).Decode(&user)
+// 	if err != nil {
+// 		if err == mongo.ErrNoDocuments {
+// 			http.Error(w, "User not found", http.StatusNotFound)
+// 		} else {
+// 			http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		}
+// 		return
+// 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
-}
+// 	w.Header().Set("Content-Type", "application/json")
+// 	json.NewEncoder(w).Encode(user)
+// }
