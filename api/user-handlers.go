@@ -55,8 +55,13 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllUsersHandler(w http.ResponseWriter, r *http.Request) {
+	client := GetClient()
+	if client == nil {
+		http.Error(w, "Database connection not established", http.StatusInternalServerError)
+		return
+	}
 
-	collection := GetClient().Database("profileFolio").Collection("users")
+	collection := client.Database("profileFolio").Collection("users")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

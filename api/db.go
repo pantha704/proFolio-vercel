@@ -24,7 +24,7 @@ func init() {
 
 func initDB() {
 	once.Do(func() {
-		// Load .env file
+		// Load local .env file
 		// err := godotenv.Load()
 		// if err != nil {
 		// 	log.Fatalf("Error loading .env file")
@@ -57,7 +57,37 @@ func initDB() {
 }
 
 func GetClient() *mongo.Client {
-	initDB()
+	if client == nil {
+		// Attempt to reconnect
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
+		// Load local .env file
+		// err := godotenv.Load()
+		// if err != nil {
+		// 	log.Fatalf("Error loading .env file")
+		// }
+
+		mongoURI := os.Getenv("MONGODB_URI")
+		if mongoURI == "" {
+			log.Println("MONGODB_URI environment variable is not set")
+		}
+
+		clientOptions := options.Client().ApplyURI(mongoURI)
+		client, err := mongo.Connect(ctx, clientOptions)
+		if err != nil {
+			log.Println("Failed to reconnect to MongoDB:", err)
+			return nil
+		}
+
+		err = client.Ping(ctx, nil)
+		if err != nil {
+			log.Println("Failed to ping MongoDB after reconnection:", err)
+			return nil
+		}
+
+		fmt.Println("Reconnected to MongoDB!")
+	}
 	return client
 }
 
