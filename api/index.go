@@ -6,15 +6,14 @@ import (
 	"strings"
 )
 
+
 func Handler(w http.ResponseWriter, r *http.Request) {
-    path := strings.TrimPrefix(r.URL.Path, "/")
-    
-    switch path {
-	case "":
-		fmt.Fprintf(w, "Hello from the main handler!")
-    case "user":
-        GetAllUsersHandler(w, r)
-    default:
-        http.Error(w, "Not Found", http.StatusNotFound)
-    }
+	path := strings.TrimPrefix(r.URL.Path, "/")
+
+	switch {
+	case strings.HasPrefix(path, "users"):
+		UserHandler(w, r)
+	default:
+		fmt.Fprintf(w, "Welcome to the main handler!")
+	}
 }

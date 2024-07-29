@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -23,7 +25,13 @@ func init() {
 
 func initDB() {
 	once.Do(func() {
-		mongoURI := "mongodb+srv://pantha704:prathamj!@cluster0.vik0gea.mongodb.net/"
+		// Load .env file
+    	err := godotenv.Load()
+		if err != nil {
+			log.Fatalf("Error loading .env file")
+		}
+
+		mongoURI := os.Getenv("MONGODB_URI")
 		if mongoURI == "" {
 			log.Println("MONGODB_URI environment variable is not set")
 			return
@@ -33,7 +41,7 @@ func initDB() {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
-		var err error
+
 		client, err = mongo.Connect(ctx, clientOptions)
 		if err != nil {
 			log.Printf("Error connecting to MongoDB: %v", err)

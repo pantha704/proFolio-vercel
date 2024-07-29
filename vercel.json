@@ -6,8 +6,5 @@
       "use": "@vercel/go"
     }
   ],
-  "routes": [
-    { "src": "/user", "dest": "/api/user-handlers.go" },
-    { "src": "/(.*)", "dest": "/api/index.go" }
-  ]
+  "routes": [{ "src": "/(.*)", "dest": "/api/index.go" }]
 }
