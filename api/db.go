@@ -9,7 +9,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -26,10 +25,10 @@ func init() {
 func initDB() {
 	once.Do(func() {
 		// Load .env file
-    	err := godotenv.Load()
-		if err != nil {
-			log.Fatalf("Error loading .env file")
-		}
+		// err := godotenv.Load()
+		// if err != nil {
+		// 	log.Fatalf("Error loading .env file")
+		// }
 
 		mongoURI := os.Getenv("MONGODB_URI")
 		if mongoURI == "" {
@@ -40,7 +39,6 @@ func initDB() {
 		clientOptions := options.Client().ApplyURI(mongoURI)
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
-
 
 		client, err = mongo.Connect(ctx, clientOptions)
 		if err != nil {
