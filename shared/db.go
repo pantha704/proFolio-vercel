@@ -22,6 +22,12 @@ func init() {
 
 func initDB() {
 	once.Do(func() {
+		// Load local .env file
+		// err := godotenv.Load()
+		// if err != nil {
+		// 	log.Printf("Error loading .env file: %v", err)
+		// }
+
 		mongoURI := os.Getenv("MONGODB_URI")
 		if mongoURI == "" {
 			log.Println("MONGODB_URI environment variable is not set")

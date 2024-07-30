@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -39,11 +40,18 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	case strings.HasPrefix(path, "/"):
 		// Extract the ID from the path
-		id := strings.TrimPrefix(path, "/")
+		value := strings.TrimPrefix(path, "/")
 
-		if id != "" {
-			// Call GetUserByIDHandler with the extracted ID
-			GetUserByIDHandler(w, r)
+		if value != "" {
+			if strings.Contains(value, "@") {
+				// Assume it's an email
+				GetUserByEmailHandler(w, r)
+			} else if len(value) == 12 {
+				GetSkillsByUserIDHandler(w, r)
+			} else {
+				// Assume it's a username
+				GetUserByUsernameHandler(w, r)
+			}
 		} else {
 			http.NotFound(w, r)
 		}
@@ -90,8 +98,10 @@ func GetAllUsersHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetUserByIDHandler(w http.ResponseWriter, r *http.Request) {
 
-	path := strings.TrimPrefix(r.URL.Path, "/users/")
-	id, err := primitive.ObjectIDFromHex(path)
+	// path := strings.TrimPrefix(r.URL.Path, "/users/")
+	value := strings.TrimPrefix(r.URL.Path, "/users/")
+
+	id, err := primitive.ObjectIDFromHex(value)
 	if err != nil {
 		http.Error(w, "Invalid user ID", http.StatusBadRequest)
 		return
@@ -114,8 +124,9 @@ func GetUserByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetUserByEmailHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the email from the URL parameter
-	vars := mux.Vars(r)
-	email := vars["email"]
+
+	email := strings.TrimPrefix(r.URL.Path, "/users/")
+	fmt.Println(email)
 
 	collection := client.Database("profileFolio").Collection("users")
 	var user models.User
@@ -139,8 +150,8 @@ func GetUserByEmailHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetUserByUsernameHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the username from the URL parameter
-	vars := mux.Vars(r)
-	username := vars["username"]
+
+	username := strings.TrimPrefix(r.URL.Path, "/users/")
 
 	collection := client.Database("profileFolio").Collection("users")
 	var user models.User
