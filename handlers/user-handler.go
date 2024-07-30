@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -49,18 +48,19 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleGetRequest(w http.ResponseWriter, r *http.Request, path string) {
+
 	switch {
 	case path == "":
 		GetAllUsersHandler(w, r)
 	case strings.Contains(path, "@"):
 		// Assume it's an email
 		GetUserByEmailHandler(w, r)
-	case len(path) == 12:
-		// Assume it's a user ID
-		GetSkillsByUserIDHandler(w, r)
-	default:
+	case len(path) < 24:
 		// Assume it's a username
 		GetUserByUsernameHandler(w, r)
+	default:
+		// Assume it's a user ID
+		GetUserByIDHandler(w, r)
 	}
 }
 
@@ -140,9 +140,7 @@ func GetUserByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetUserByEmailHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the email from the URL parameter
-
 	email := strings.TrimPrefix(r.URL.Path, "/users/")
-	fmt.Println(email)
 
 	collection := client.Database("profileFolio").Collection("users")
 	var user models.User
@@ -166,7 +164,6 @@ func GetUserByEmailHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetUserByUsernameHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the username from the URL parameter
-
 	username := strings.TrimPrefix(r.URL.Path, "/users/")
 
 	collection := client.Database("profileFolio").Collection("users")

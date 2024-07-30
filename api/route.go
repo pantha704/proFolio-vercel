@@ -32,10 +32,10 @@ func RegisterUserRoutes(router *mux.Router) {
 	authenticated.HandleFunc("/user", handlers.AddUserHandler).Methods("POST")
 
 	// Get User
-	authenticated.HandleFunc("/user", handlers.GetUserHandler).Methods("GET")                               // Route for getting a user
-	authenticated.HandleFunc("/user/{id}", handlers.GetUserByIDHandler).Methods("GET")                      // Route for getting a user by ID
-	authenticated.HandleFunc("/user/email/{email}", handlers.GetUserByEmailHandler).Methods("GET")          // Route for getting a user by email
-	authenticated.HandleFunc("/user/username/{username}", handlers.GetUserByUsernameHandler).Methods("GET") // Route for getting a user by username
+	authenticated.HandleFunc("/user", handlers.UserHandler).Methods("GET")                     // Route for getting a user
+	authenticated.HandleFunc("/user/{id}", handlers.UserHandler).Methods("GET")                // Route for getting a user by ID
+	authenticated.HandleFunc("/user/email/{email}", handlers.UserHandler).Methods("GET")       // Route for getting a user by email
+	authenticated.HandleFunc("/user/username/{username}", handlers.UserHandler).Methods("GET") // Route for getting a user by username
 
 	// Update User
 	authenticated.HandleFunc("/user/{id}", handlers.UpdateUserHandler).Methods("PATCH")                          // Route for updating a user by ID
