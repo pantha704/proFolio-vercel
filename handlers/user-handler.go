@@ -33,31 +33,47 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	path := strings.TrimPrefix(r.URL.Path, "/users")
-	// fmt.Println(path)
+
+	switch r.Method {
+	case http.MethodGet:
+		handleGetRequest(w, r, path)
+	case http.MethodPost:
+		handlePostRequest(w, r)
+	case http.MethodPut:
+		handlePutRequest(w, r)
+	case http.MethodDelete:
+		handleDeleteRequest(w, r, path)
+	default:
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func handleGetRequest(w http.ResponseWriter, r *http.Request, path string) {
 	switch {
 	case path == "":
 		GetAllUsersHandler(w, r)
-		return
-	case strings.HasPrefix(path, "/"):
-		// Extract the ID from the path
-		value := strings.TrimPrefix(path, "/")
-
-		if value != "" {
-			if strings.Contains(value, "@") {
-				// Assume it's an email
-				GetUserByEmailHandler(w, r)
-			} else if len(value) == 12 {
-				GetSkillsByUserIDHandler(w, r)
-			} else {
-				// Assume it's a username
-				GetUserByUsernameHandler(w, r)
-			}
-		} else {
-			http.NotFound(w, r)
-		}
+	case strings.Contains(path, "@"):
+		// Assume it's an email
+		GetUserByEmailHandler(w, r)
+	case len(path) == 12:
+		// Assume it's a user ID
+		GetSkillsByUserIDHandler(w, r)
 	default:
-		http.NotFound(w, r)
+		// Assume it's a username
+		GetUserByUsernameHandler(w, r)
 	}
+}
+
+func handlePostRequest(w http.ResponseWriter, r *http.Request) {
+	// Implement your logic for handling POST requests
+}
+
+func handlePutRequest(w http.ResponseWriter, r *http.Request) {
+	// Implement your logic for handling PUT requests
+}
+
+func handleDeleteRequest(w http.ResponseWriter, r *http.Request, path string) {
+	// Implement your logic for handling DELETE requests
 }
 
 func GetAllUsersHandler(w http.ResponseWriter, r *http.Request) {
