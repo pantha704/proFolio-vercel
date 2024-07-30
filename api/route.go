@@ -2,10 +2,10 @@
 package api
 
 import (
-	"backend/handlers"   // Importing the handlers package
-	"backend/middleware" // Importing the middleware package
 	"fmt"
 	"net/http"
+	"profolio-vercel/handlers"   // Importing the handlers package
+	"profolio-vercel/middleware" // Importing the middleware package
 
 	"github.com/gorilla/mux" // Importing the mux package from Gorilla for HTTP routing
 )

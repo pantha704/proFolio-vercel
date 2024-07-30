@@ -1,13 +1,14 @@
 package handlers
 
 import (
-	"backend/config"
 	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+
+	"profolio-vercel/config"
 
 	"github.com/google/generative-ai-go/genai"
 	openai "github.com/sashabaranov/go-openai"

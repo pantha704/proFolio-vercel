@@ -69,10 +69,10 @@
 package main
 
 import (
-	"backend/api"
 	"fmt"
 	"net/http"
 	"os"
+	"profolio-vercel/api"
 )
 
 func main() {
@@ -88,4 +88,3 @@ func main() {
 		fmt.Printf("Error starting server: %s\n", err)
 	}
 }
-

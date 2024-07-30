@@ -1,13 +1,15 @@
 package handlers
 
 import (
-	"backend/middleware"
-	"backend/models"
 	"context"
 	"encoding/json"
 	"net/http"
 	"strings"
 	"time"
+
+	"profolio-vercel/middleware"
+	"profolio-vercel/models"
+	"profolio-vercel/shared"
 
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
@@ -19,18 +21,22 @@ import (
 var client *mongo.Client
 
 func SetClient(mongoClient *mongo.Client) {
-	client = mongoClient
+	client = shared.GetClient()
 }
 
 func UserHandler(w http.ResponseWriter, r *http.Request) {
+	SetClient(client)
+	if client == nil {
+		http.Error(w, "Database client not initialized", http.StatusInternalServerError)
+		return
+	}
+
 	path := strings.TrimPrefix(r.URL.Path, "/users")
 	// fmt.Println(path)
 	switch {
-
 	case path == "":
 		GetAllUsersHandler(w, r)
 		return
-
 	case strings.HasPrefix(path, "/"):
 		// Extract the ID from the path
 		id := strings.TrimPrefix(path, "/")
@@ -46,10 +52,46 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func GetAllUsersHandler(w http.ResponseWriter, r *http.Request) {
+
+	collection := client.Database("profileFolio").Collection("users")
+	var users []models.User
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Find all users
+	cursor, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer cursor.Close(ctx)
+
+	// Iterate through the cursor and decode each document
+	for cursor.Next(ctx) {
+		var user models.User
+		if err := cursor.Decode(&user); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		users = append(users, user)
+	}
+
+	if err := cursor.Err(); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(users); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
 func GetUserByIDHandler(w http.ResponseWriter, r *http.Request) {
-	// Get the user ID from the URL parameter
-	vars := mux.Vars(r)
-	userID, err := primitive.ObjectIDFromHex(vars["id"])
+
+	path := strings.TrimPrefix(r.URL.Path, "/users/")
+	id, err := primitive.ObjectIDFromHex(path)
 	if err != nil {
 		http.Error(w, "Invalid user ID", http.StatusBadRequest)
 		return
@@ -60,14 +102,9 @@ func GetUserByIDHandler(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// Find user by ID
-	err = collection.FindOne(ctx, bson.M{"_id": userID}).Decode(&user)
+	err = collection.FindOne(ctx, bson.M{"_id": id}).Decode(&user)
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			http.Error(w, "User not found", http.StatusNotFound)
-		} else {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
+		http.Error(w, "User not found", http.StatusNotFound)
 		return
 	}
 
