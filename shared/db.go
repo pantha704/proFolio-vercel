@@ -22,12 +22,6 @@ func init() {
 
 func initDB() {
 	once.Do(func() {
-		// Load local .env file
-		// err := godotenv.Load()
-		// if err != nil {
-		// 	log.Printf("Error loading .env file: %v", err)
-		// }
-
 		mongoURI := os.Getenv("MONGODB_URI")
 		if mongoURI == "" {
 			log.Println("MONGODB_URI environment variable is not set")
@@ -38,7 +32,8 @@ func initDB() {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
-		client, err := mongo.Connect(ctx, clientOptions)
+		var err error
+		client, err = mongo.Connect(ctx, clientOptions)
 		if err != nil {
 			log.Printf("Error connecting to MongoDB: %v", err)
 			return
@@ -54,14 +49,11 @@ func initDB() {
 }
 
 func GetClient() *mongo.Client {
-	initDB()
 	if client == nil {
-		log.Println("Warning: Client is nil. Attempting to reinitialize.")
 		initDB()
 		if client == nil {
 			log.Println("Error: Failed to initialize client.")
-		} else {
-			log.Println("Successfully reinitialized client.")
+			return nil
 		}
 	}
 	return client
