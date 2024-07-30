@@ -54,6 +54,7 @@ func initDB() {
 }
 
 func GetClient() *mongo.Client {
+	initDB()
 	if client == nil {
 		log.Println("Warning: Client is nil. Attempting to reinitialize.")
 		initDB()
